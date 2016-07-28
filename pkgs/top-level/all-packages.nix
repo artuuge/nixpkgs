@@ -9495,6 +9495,8 @@ in
   tokyotyrant = callPackage ../development/libraries/tokyo-tyrant { };
 
   tremor = callPackage ../development/libraries/tremor { };
+  
+  tslib = callPackage ../development/libraries/tslib { };
 
   udns = callPackage ../development/libraries/udns { };
 
@@ -12538,6 +12540,26 @@ in
 
     # withGUI = true;
     # inherit (pkgs.qt5) qtwebengine qtbase qtdeclarative;
+  };
+
+  cpp_ethereum_mesa = callPackage ../applications/misc/webthree-umbrella/default_qt.nix {
+    withOpenCL = false; 
+    withProfiling = false;
+    withEVMJIT = false;
+    inherit (llvmPackages_38) llvm;
+
+    withGUI = true;
+    qt = pkgs.callPackage ../applications/misc/webthree-umbrella/qt.nix {
+      inherit (pkgs.xorg)
+        libX11 libxcb xcbutilwm xcbutilimage xcbutilkeysyms libXrender libXi libXext libXfixes xcbutilrenderutil
+        libXcomposite libXcursor libXrandr libXScrnSaver libXtst;
+      libvpx = pkgs.libvpx.override { experimentalSpatialSvcSupport = true; };
+      srtp = pkgs.srtp.overrideDerivation (oldAttrs: {
+        buildPhase = ''
+          make shared_library
+        '';
+      });   
+    };
   };
 
   csdp = callPackage ../applications/science/math/csdp {
